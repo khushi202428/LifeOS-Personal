@@ -47,13 +47,10 @@ leaderboards–streaks,badges challenges
 
 
 
-testing user demo -
-{
-  "username": "Aashutosh",
-  "email_id": "aashu1410@gmail.com",
-  "password": "Aashu@1410",
-  "timezone": "UTC"
-}
+## Demo account
+
+Create a local demo account from the sign-up screen. Do not commit real email
+addresses, passwords, or other account credentials to this repository.
 
 chatbot ui interface-
 <img width="1109" height="695" alt="Screenshot 2026-01-09 150400" src="https://github.com/user-attachments/assets/b34ce8da-d4a7-44f5-add0-4d5448cb9b14" />

@@ -92,7 +92,10 @@ evaluator_structured_llm = (
 
 routine_structured_llm = (
     routine_llm
-    .with_structured_output(RoutineLLMOutput, method="json_schema")
+    # GPT-OSS occasionally returns the JSON *schema* itself when invoked
+    # through Groq's json_schema mode.  Function calling returns the actual
+    # arguments and is parsed by LangChain into RoutineLLMOutput.
+    .with_structured_output(RoutineLLMOutput, method="function_calling")
 )
 
 diet_planer_llm = (
