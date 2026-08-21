@@ -64,7 +64,9 @@ plan_mode = get_llm("openai/gpt-oss-120b", 0.3)\
 aggregation_llm = get_llm("openai/gpt-oss-120b", 0.1)
 analysis_llm = get_llm("openai/gpt-oss-120b", 0.5)
 
-goal_prompt_llm = get_llm("llama-3.1-8b-instant", 0.1)
+# JSON-schema structured output is used below. GPT-OSS supports Groq's
+# structured-output API; the previous Llama model was configured for tool calls.
+goal_prompt_llm = get_llm("openai/gpt-oss-120b", 0.1)
 
 evaluator_llm = get_llm("openai/gpt-oss-120b", 0.3)
 routine_llm = get_llm("openai/gpt-oss-120b", 0.3)
@@ -75,83 +77,70 @@ fitness_planner_llm = get_llm("openai/gpt-oss-120b", 0.3)
 # --------------------------------------------------
 goal_prompt_structured_llm = (
     goal_prompt_llm
-    .bind_tools([json])
-    .with_structured_output(GoalCreate)
+    .with_structured_output(GoalCreate, method="json_schema")
 )
 
 intent_resolver_llm = (
     base_llm
-    .bind_tools([json])
-    .with_structured_output(IntentResolutionOutput)
+    .with_structured_output(IntentResolutionOutput, method="json_schema")
 )
 
 evaluator_structured_llm = (
     evaluator_llm
-    .bind_tools([json])
-    .with_structured_output(EvaluatorOutput)
+    .with_structured_output(EvaluatorOutput, method="json_schema")
 )
 
 routine_structured_llm = (
     routine_llm
-    .bind_tools([json])
-    .with_structured_output(RoutineLLMOutput)
+    .with_structured_output(RoutineLLMOutput, method="json_schema")
 )
 
 diet_planer_llm = (
     routine_llm
-    .bind_tools([json])
-    .with_structured_output(DietPlan)
+    .with_structured_output(DietPlan, method="json_schema")
 )
 
 structured_fitness_planer_llm = (
     fitness_planner_llm
-    .bind_tools([json])
-    .with_structured_output(FitnessPlan)
+    .with_structured_output(FitnessPlan, method="json_schema")
 )
 
 weekly_focus_llm = (
     get_llm("openai/gpt-oss-120b", 0.1)
-    .bind_tools([json])
-    .with_structured_output(WeeklyFocus)
+    .with_structured_output(WeeklyFocus, method="json_schema")
 )
 
 day_timeline_llm = (
     get_llm("openai/gpt-oss-120b", 0.2)
-    .bind_tools([json])
-    .with_structured_output(DayTimelineSkeleton)
+    .with_structured_output(DayTimelineSkeleton, method="json_schema")
 )
 
 strength_detail_llm = (
     get_llm("openai/gpt-oss-120b", 0.2)
-    .bind_tools([json])
-    .with_structured_output(StrengthDetails)
+    .with_structured_output(StrengthDetails, method="json_schema")
 )
 
 cardio_detail_llm = (
     get_llm("openai/gpt-oss-120b", 0.2)
-    .bind_tools([json])
-    .with_structured_output(CardioDetails)
+    .with_structured_output(CardioDetails, method="json_schema")
 )
 
 mobility_detail_llm = (
     get_llm("openai/gpt-oss-120b", 0.2)
-    .bind_tools([json])
-    .with_structured_output(MobilityDetails)
+    .with_structured_output(MobilityDetails, method="json_schema")
 )
 
 activity_structured_llm = (
     base_llm
-    .bind_tools([json])
-    .with_structured_output(ActivityCreateList)
+    .with_structured_output(ActivityCreateList, method="json_schema")
 )
 
 analytics_structured_llm = (
     aggregation_llm
-    .with_structured_output(AggregationOutput)
+    .with_structured_output(AggregationOutput, method="json_schema")
 )
 
 routine_structurer_llm = (
     analysis_llm
-    .bind_tools([json])
-    .with_structured_output(RoutineStructurerNodeResponse)
+    .with_structured_output(RoutineStructurerNodeResponse, method="json_schema")
 )

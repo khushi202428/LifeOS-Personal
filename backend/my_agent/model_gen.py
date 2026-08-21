@@ -1,5 +1,5 @@
 from langgraph.graph import StateGraph, START, END
-from langchain_core.messages import HumanMessage, ToolMessage
+from langchain_core.messages import AIMessage, HumanMessage, ToolMessage
 from langchain_core.runnables import RunnableConfig
 from typing import Literal
 
@@ -81,6 +81,20 @@ def should_continue(state: ChatState) -> Literal["tool_node_analytics", "end"]:
     return "tool_node_analytics" if last_message.tool_calls else "end"
 
 
+def general_response_node(state: ChatState):
+    """Respond safely to greetings and requests outside the planner workflows."""
+    return {
+        "messages": [
+            AIMessage(
+                content=(
+                    "Hi! I can help you create goals, tasks, a fitness plan, "
+                    "a daily schedule, or productivity insights."
+                )
+            )
+        ]
+    }
+
+
 def tool_node_analytics(state: ChatState, config: RunnableConfig):
     messages = []
     current_user_id = config.get("configurable", {}).get("user_id")
@@ -125,6 +139,7 @@ graph = StateGraph(ChatState)
 
 # ---------------- ADD NODES ----------------
 graph.add_node("intent_resolver", intent_resolver_node)
+graph.add_node("general_response", general_response_node)
 
 # goal
 graph.add_node("goal_prompt_builder_node", goal_prompt_builder_node)
@@ -177,9 +192,11 @@ graph.add_conditional_edges(
         "task": "task_creator_node",
         "activity_create": "activity_create_node",
         "analytics": "aggregation_node",
-        "scheduling": "planning_decider_node"
+        "scheduling": "planning_decider_node",
+        "general_query": "general_response",
     },
 )
+graph.add_edge("general_response", END)
 # ---------- GOAL ----------
 graph.add_edge("goal_prompt_builder_node", "routine_generator_node")
 graph.add_edge("routine_generator_node", "goal_evaluator_node")
