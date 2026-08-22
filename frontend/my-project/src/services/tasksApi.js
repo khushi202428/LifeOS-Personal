@@ -4,6 +4,7 @@ import { baseQuery } from "./baseQuery";
 export const tasksApi = createApi({
   reducerPath: "tasksApi",
   baseQuery,
+  tagTypes: ["Tasks"],
 
   endpoints: (builder) => ({
 
@@ -12,6 +13,7 @@ export const tasksApi = createApi({
     ------------------------------ */
     getTasks: builder.query({
       query: () => "/tasks",
+      providesTags: ["Tasks"],
     }),
 
     /* -----------------------------
@@ -19,6 +21,7 @@ export const tasksApi = createApi({
     ------------------------------ */
     getTasksByGoal: builder.query({
       query: (goalId) => `/tasks/by-goal/${goalId}`,
+      providesTags: ["Tasks"],
     }),
 
     /* -----------------------------
@@ -30,6 +33,30 @@ export const tasksApi = createApi({
         method: "POST",
         body: payload,
       }),
+      invalidatesTags: ["Tasks"],
+    }),
+
+    /* -----------------------------
+       UPDATE TASK
+    ------------------------------ */
+    updateTask: builder.mutation({
+      query: ({ task_id, ...payload }) => ({
+        url: `/tasks/${task_id}`,
+        method: "PATCH",
+        body: payload,
+      }),
+      invalidatesTags: ["Tasks"],
+    }),
+
+    /* -----------------------------
+       DELETE TASK
+    ------------------------------ */
+    deleteTask: builder.mutation({
+      query: (task_id) => ({
+        url: `/tasks/${task_id}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["Tasks"],
     }),
 
   }),
@@ -39,4 +66,6 @@ export const {
   useGetTasksQuery,
   useGetTasksByGoalQuery,
   useCreateTaskMutation,
+  useUpdateTaskMutation,
+  useDeleteTaskMutation,
 } = tasksApi;

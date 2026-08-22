@@ -4,6 +4,7 @@ import { baseQuery } from "./baseQuery";
 export const subtasksApi = createApi({
   reducerPath: "subtasksApi",
   baseQuery,
+  tagTypes: ["Subtasks"],
 
   endpoints: (builder) => ({
 
@@ -12,6 +13,7 @@ export const subtasksApi = createApi({
     ------------------------------ */
     getSubtasksByTask: builder.query({
       query: (taskId) => `/subtasks/by-task/${taskId}`,
+      providesTags: ["Subtasks"],
     }),
 
     /* -----------------------------
@@ -23,6 +25,29 @@ export const subtasksApi = createApi({
         method: "POST",
         body: payload,
       }),
+      invalidatesTags: ["Subtasks"],
+    }),
+
+    /* -----------------------------
+       COMPLETE SUBTASK
+    ------------------------------ */
+    completeSubtask: builder.mutation({
+      query: (subtask_id) => ({
+        url: `/subtasks/${subtask_id}/complete`,
+        method: "POST",
+      }),
+      invalidatesTags: ["Subtasks", "Tasks"],
+    }),
+
+    /* -----------------------------
+       DELETE SUBTASK
+    ------------------------------ */
+    deleteSubtask: builder.mutation({
+      query: (subtask_id) => ({
+        url: `/subtasks/${subtask_id}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["Subtasks", "Tasks"],
     }),
 
   }),
@@ -31,4 +56,6 @@ export const subtasksApi = createApi({
 export const {
   useGetSubtasksByTaskQuery,
   useCreateSubtaskMutation,
+  useCompleteSubtaskMutation,
+  useDeleteSubtaskMutation,
 } = subtasksApi;

@@ -156,6 +156,7 @@ export function ProposalsPage() {
               <FitnessProposal
                 proposal={fitnessProposal}
                 onStatusChange={updateStatus}
+                onUpdate={updateEntity}
               />
             )}
           </AnimatePresence>

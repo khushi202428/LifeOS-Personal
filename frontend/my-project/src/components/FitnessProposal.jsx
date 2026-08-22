@@ -33,12 +33,13 @@ export function FitnessProposal({ proposal, onStatusChange, onUpdate }) {
   const { proposal_id, payload, status } = proposal;
 
   const [draft, setDraft] = React.useState(payload);
-  const isLocked = status === "approved";
+  const normalizedStatus = status?.toUpperCase();
+  const isLocked = normalizedStatus === "APPROVED";
 
   const updateDraft = (patch) => {
     setDraft((prev) => {
       const updated = { ...prev, ...patch };
-      onUpdate(proposal_id, updated);
+      onUpdate?.(proposal_id, updated);
       return updated;
     });
   };
@@ -50,7 +51,7 @@ export function FitnessProposal({ proposal, onStatusChange, onUpdate }) {
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0 }}
       className={`rounded-3xl border-2 shadow-xl bg-white ${
-        STATUS_BORDER[status]
+        STATUS_BORDER[normalizedStatus] || STATUS_BORDER.PENDING
       }`}
     >
       {/* HEADER */}
@@ -98,7 +99,7 @@ export function FitnessProposal({ proposal, onStatusChange, onUpdate }) {
 
       {/* ACTION BAR */}
       <div className="sticky bottom-0 bg-white border-t p-6 flex justify-end gap-4 rounded-b-3xl">
-        {status !== "approved" && (
+        {normalizedStatus !== "APPROVED" && (
           <Button
             className="bg-green-600 text-white"
             onClick={() => onStatusChange(proposal_id, "APPROVED")}
@@ -108,7 +109,7 @@ export function FitnessProposal({ proposal, onStatusChange, onUpdate }) {
           </Button>
         )}
 
-        {status !== "rejected" && (
+        {normalizedStatus !== "REJECTED" && (
           <Button
             variant="destructive"
             onClick={() => onStatusChange(proposal_id, "REJECTED")}
@@ -118,7 +119,7 @@ export function FitnessProposal({ proposal, onStatusChange, onUpdate }) {
           </Button>
         )}
 
-        {status !== "pending" && (
+        {normalizedStatus !== "PENDING" && (
           <Button
             variant="outline"
             onClick={() => onStatusChange(proposal_id, "PENDING")}

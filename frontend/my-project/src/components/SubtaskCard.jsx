@@ -10,8 +10,12 @@ import {
 } from "lucide-react";
 import { Button } from "./ui/Button";
 import { Checkbox } from "./ui/Checkbox";
+import { useCompleteSubtaskMutation, useDeleteSubtaskMutation } from "../services/subtasksApi";
+import { toast } from "sonner";
 
 export function SubtaskCard({ subtask }) {
+  const [completeSubtask] = useCompleteSubtaskMutation();
+  const [deleteSubtask] = useDeleteSubtaskMutation();
   /* -----------------------------
      DERIVED PROGRESS
   ------------------------------ */
@@ -43,7 +47,19 @@ export function SubtaskCard({ subtask }) {
             {subtask.subtask_type === "checkbox" && (
               <Checkbox
                 checked={subtask.achieved}
-                onClick={(e) => e.stopPropagation()}
+                onClick={async (e) => {
+                  e.stopPropagation();
+                  if (subtask.achieved) {
+                    toast.info("Subtask already completed.");
+                    return;
+                  }
+                  try {
+                    await completeSubtask(subtask.subtask_id).unwrap();
+                    toast.success("Subtask completed!");
+                  } catch (err) {
+                    toast.error("Failed to update subtask status");
+                  }
+                }}
               />
             )}
 
@@ -133,7 +149,15 @@ export function SubtaskCard({ subtask }) {
           className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity pt-2 border-t border-gray-100"
           onClick={(e) => e.stopPropagation()}
         >
-          <Button variant="ghost" size="sm" className="flex-1 h-8 text-xs">
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            className="flex-1 h-8 text-xs"
+            onClick={(e) => {
+              e.stopPropagation();
+              toast.info("Edit subtask feature coming soon!");
+            }}
+          >
             <Edit className="w-3 h-3 mr-1" />
             Edit
           </Button>
@@ -142,6 +166,17 @@ export function SubtaskCard({ subtask }) {
             variant="ghost"
             size="sm"
             className="flex-1 h-8 text-xs text-red-600 hover:bg-red-50"
+            onClick={async (e) => {
+              e.stopPropagation();
+              if (window.confirm("Are you sure you want to delete this subtask?")) {
+                try {
+                  await deleteSubtask(subtask.subtask_id).unwrap();
+                  toast.success("Subtask deleted successfully");
+                } catch (err) {
+                  toast.error("Failed to delete subtask");
+                }
+              }
+            }}
           >
             <Trash2 className="w-3 h-3 mr-1" />
             Delete

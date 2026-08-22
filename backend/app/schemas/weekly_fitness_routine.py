@@ -21,6 +21,15 @@ class WeeklyFitnessRoutineResponse(BaseModel):
 
     status: RoutineStatus
     created_at: datetime
+    goal_id: int
+    progress_percent: float
+    completed_blocks: Dict[str, bool]
 
     class Config:
         orm_mode = True
+
+
+class FitnessProgressUpdate(BaseModel):
+    day: str
+    time_range: str
+    completed: bool

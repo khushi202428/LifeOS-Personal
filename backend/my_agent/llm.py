@@ -105,32 +105,35 @@ diet_planer_llm = (
 
 structured_fitness_planer_llm = (
     fitness_planner_llm
-    .with_structured_output(FitnessPlan, method="json_schema")
+    # The fitness planner prompt explicitly requests a FitnessPlan tool call.
+    # json_schema sends tool_choice="none" to Groq, which rejects that model
+    # response. Function calling both permits and parses the requested tool.
+    .with_structured_output(FitnessPlan, method="function_calling")
 )
 
 weekly_focus_llm = (
     get_llm("openai/gpt-oss-120b", 0.1)
-    .with_structured_output(WeeklyFocus, method="json_schema")
+    .with_structured_output(WeeklyFocus, method="function_calling")
 )
 
 day_timeline_llm = (
     get_llm("openai/gpt-oss-120b", 0.2)
-    .with_structured_output(DayTimelineSkeleton, method="json_schema")
+    .with_structured_output(DayTimelineSkeleton, method="function_calling")
 )
 
 strength_detail_llm = (
     get_llm("openai/gpt-oss-120b", 0.2)
-    .with_structured_output(StrengthDetails, method="json_schema")
+    .with_structured_output(StrengthDetails, method="function_calling")
 )
 
 cardio_detail_llm = (
     get_llm("openai/gpt-oss-120b", 0.2)
-    .with_structured_output(CardioDetails, method="json_schema")
+    .with_structured_output(CardioDetails, method="function_calling")
 )
 
 mobility_detail_llm = (
     get_llm("openai/gpt-oss-120b", 0.2)
-    .with_structured_output(MobilityDetails, method="json_schema")
+    .with_structured_output(MobilityDetails, method="function_calling")
 )
 
 activity_structured_llm = (

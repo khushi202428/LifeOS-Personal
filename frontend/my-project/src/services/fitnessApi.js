@@ -9,10 +9,16 @@ export const fitnessApi = createApi({
       query: () => ({
         url: "/fitness/weekly-routine",
       }),
+      // Do not retain an earlier 404 after a plan has been approved.
+      keepUnusedDataFor: 0,
+    }),
+    updateFitnessProgress: builder.mutation({
+      query: (body) => ({ url: "/fitness/weekly-routine/progress", method: "PATCH", body }),
     }),
   }),
 });
 
 export const {
   useGetWeeklyFitnessRoutineQuery,
+  useUpdateFitnessProgressMutation,
 } = fitnessApi;

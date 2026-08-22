@@ -68,7 +68,10 @@ export default function FitnessTab() {
     data: weeklyFitnessRoutine,
     isLoading,
     isError,
-  } = useGetWeeklyFitnessRoutineQuery();
+  } = useGetWeeklyFitnessRoutineQuery(undefined, {
+    skip: !user,
+    refetchOnMountOrArgChange: true,
+  });
 
   const daySchedule = weeklyFitnessRoutine?.schedule?.[todayKey];
   console.log("todayKey:", todayKey);
@@ -111,10 +114,13 @@ export default function FitnessTab() {
     }
   }, [progress, totalCount, celebrationKey]);
 
-  if (isLoading) return <div className="text-white p-6">Loading...</div>;
-  if (isError) return <div className="text-red-400 p-6">Error loading</div>;
+  if (!user)
+    return <FitnessStatus message="Please sign in to view your workout." />;
+  if (isLoading) return <FitnessStatus message="Loading your workout..." />;
+  if (isError)
+    return <FitnessStatus message="No workout plan yet. Create a fitness plan in AI Planner, approve it, then choose Execute Plan." />;
   if (!weeklyFitnessRoutine || !daySchedule)
-    return <div className="text-white p-6">No workout today</div>;
+    return <FitnessStatus message="No workout is scheduled for today. Open Week View to see your routine." />;
 
   const plan = weeklyFitnessRoutine.plan_snapshot;
 
@@ -166,7 +172,7 @@ export default function FitnessTab() {
           </div>
 
           {/* CONTENT (UNCHANGED) */}
-          <div className="relative z-10">
+          <div className="relative z-10 pb-36">
             <div className="max-w-2xl mx-auto px-6 py-8 text-center">
               <h1 className="text-4xl font-bold text-white">
                 {daySchedule.focus.toUpperCase()}
@@ -241,5 +247,16 @@ export default function FitnessTab() {
         )}
       </AnimatePresence>
     </>
+  );
+}
+
+function FitnessStatus({ message }) {
+  return (
+    <div className="min-h-[calc(100vh-96px)] bg-slate-950 px-6 flex items-center justify-center">
+      <div className="max-w-md rounded-2xl border border-white/20 bg-white/10 p-6 text-center text-white shadow-xl">
+        <Dumbbell className="mx-auto mb-3 h-9 w-9 text-orange-400" />
+        <p>{message}</p>
+      </div>
+    </div>
   );
 }

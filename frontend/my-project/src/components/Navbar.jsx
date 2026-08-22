@@ -17,14 +17,34 @@ import { logout } from "../store/authSlice";
 import { useLogoutMutation } from "../services/authApi";
 import { useCreateNewChatMutation } from "../services/chatApi";
 
+import { useGetEventsByDateQuery } from "../services/eventsApi";
 
-export function Navbar({ isRoutineCompleted }) {
+export function Navbar({ isRoutineCompleted: propIsRoutineCompleted }) {
   const { isAuthenticated } = useSelector((s) => s.auth);
   const [createNewChat] = useCreateNewChatMutation();
   const dispatch = useDispatch();
    const [logoutApi] = useLogoutMutation();
   const navigate = useNavigate();
   const location = useLocation();
+
+  const today = new Date();
+  const dateISO = new Date(
+    today.getFullYear(),
+    today.getMonth(),
+    today.getDate(),
+    0, 0, 0
+  ).toISOString();
+
+  const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
+  const { data: events = [] } = useGetEventsByDateQuery({
+    date: dateISO,
+    tz: userTimezone,
+  }, { skip: !isAuthenticated });
+
+  const isRoutineCompleted = propIsRoutineCompleted !== undefined 
+    ? propIsRoutineCompleted 
+    : (events.length > 0 && events.every((event) => event.status === "Completed"));
 
   const isActive = (path) => location.pathname === path;
 
@@ -63,7 +83,12 @@ export function Navbar({ isRoutineCompleted }) {
           </div>
 
           {/* Status Badge */}
-          <div className="flex items-center gap-2 bg-white/20 px-3 py-1.5 rounded-full">
+          <button
+            type="button"
+            onClick={() => navigate("/goals")}
+            title="Open your goals"
+            className="flex items-center gap-2 bg-white/20 px-3 py-1.5 rounded-full transition-colors hover:bg-white/30"
+          >
             {isRoutineCompleted ? (
               <CheckCircle2 className="w-5 h-5 text-white" />
             ) : (
@@ -72,7 +97,7 @@ export function Navbar({ isRoutineCompleted }) {
             <span className="text-sm text-white">
               {isRoutineCompleted ? "Daily Goals Complete!" : "Goals Pending"}
             </span>
-          </div>
+          </button>
         </div>
 
         {/* CENTER NAV */}

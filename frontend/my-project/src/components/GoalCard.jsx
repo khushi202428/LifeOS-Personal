@@ -10,9 +10,12 @@ import {
 import { Progress } from "./ui/Progress";
 import { Button } from "./ui/Button";
 import { useNavigate } from "react-router-dom";
+import { useDeleteGoalMutation } from "../services/goalsApi";
+import { toast } from "sonner";
 
 export function GoalCard({ goal }) {
   const navigate = useNavigate();
+  const [deleteGoal] = useDeleteGoalMutation();
 
   const importanceLabel = (level) => {
     if (!level) return null;
@@ -28,16 +31,7 @@ export function GoalCard({ goal }) {
     >
       <div className="h-2 bg-gradient-to-r from-purple-500 via-purple-600 to-indigo-600" />
 
-      {/* Hover Overlay */}
-      <div className="absolute inset-0 bg-gradient-to-br from-purple-600/90 to-indigo-600/90 opacity-0 group-hover:opacity-100 transition-opacity z-10 flex items-center justify-center">
-        <div className="text-white text-center space-y-2">
-          <div className="flex items-center justify-center gap-2 text-lg font-semibold">
-            <ChevronRight className="w-5 h-5" />
-            Click to view tasks
-          </div>
-          <div className="text-sm opacity-90">View tasks • Add new task</div>
-        </div>
-      </div>
+
 
       <div className="p-6 relative z-0">
         {/* HEADER */}
@@ -108,7 +102,15 @@ export function GoalCard({ goal }) {
           className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity"
           onClick={(e) => e.stopPropagation()}
         >
-          <Button variant="outline" size="sm" className="flex-1">
+          <Button 
+            variant="outline" 
+            size="sm" 
+            className="flex-1"
+            onClick={(e) => {
+              e.stopPropagation();
+              toast.info("Edit goal feature coming soon!");
+            }}
+          >
             <Edit className="w-4 h-4 mr-2" />
             Edit
           </Button>
@@ -116,6 +118,17 @@ export function GoalCard({ goal }) {
             variant="outline"
             size="sm"
             className="flex-1 text-red-600 hover:bg-red-50"
+            onClick={async (e) => {
+              e.stopPropagation();
+              if (window.confirm("Are you sure you want to delete this goal?")) {
+                try {
+                  await deleteGoal(goal.goal_id).unwrap();
+                  toast.success("Goal deleted successfully");
+                } catch (err) {
+                  toast.error("Failed to delete goal");
+                }
+              }
+            }}
           >
             <Trash2 className="w-4 h-4 mr-2" />
             Delete

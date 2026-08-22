@@ -34,6 +34,7 @@ from my_agent.models.agent_run import AgentRun
 from my_agent.models.approval_decision import ApprovalDecision
 from app.models.routine_event import RoutineEvent
 from app.models.reminder import Reminder
+from app.models.fitness_routine_progress import FitnessRoutineProgressDB
 from sqlalchemy import text
 from app.core.scheduler import start_scheduler
 app = FastAPI(title="Routine Planner")

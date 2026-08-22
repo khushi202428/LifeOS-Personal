@@ -10,9 +10,13 @@ import {
 import { Button } from "./ui/Button";
 import { Checkbox } from "./ui/Checkbox";
 import { useNavigate } from "react-router-dom";
+import { useUpdateTaskMutation, useDeleteTaskMutation } from "../services/tasksApi";
+import { toast } from "sonner";
 
 export function TaskCard({ task }) {
   const navigate = useNavigate();
+  const [updateTask] = useUpdateTaskMutation();
+  const [deleteTask] = useDeleteTaskMutation();
 
   const difficultyLabel = (d) => {
     if (d >= 4) return "Hard";
@@ -31,7 +35,18 @@ export function TaskCard({ task }) {
           <div className="flex items-start gap-3 flex-1">
             <Checkbox
               checked={task.achieved}
-              onClick={(e) => e.stopPropagation()}
+              onClick={async (e) => {
+                e.stopPropagation();
+                try {
+                  await updateTask({ 
+                    task_id: task.task_id, 
+                    achieved: !task.achieved,
+                    percent_completion: !task.achieved ? 100 : 0
+                  }).unwrap();
+                } catch (err) {
+                  toast.error("Failed to update task status");
+                }
+              }}
             />
 
             <div className="flex-1">
@@ -114,7 +129,15 @@ export function TaskCard({ task }) {
           className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity pt-3 border-t border-gray-100 mt-4"
           onClick={(e) => e.stopPropagation()}
         >
-          <Button variant="outline" size="sm" className="flex-1">
+          <Button 
+            variant="outline" 
+            size="sm" 
+            className="flex-1"
+            onClick={(e) => {
+              e.stopPropagation();
+              toast.info("Edit task feature coming soon!");
+            }}
+          >
             <Edit className="w-4 h-4 mr-2" />
             Edit
           </Button>
@@ -123,6 +146,17 @@ export function TaskCard({ task }) {
             variant="outline"
             size="sm"
             className="flex-1 text-red-600 hover:bg-red-50"
+            onClick={async (e) => {
+              e.stopPropagation();
+              if (window.confirm("Are you sure you want to delete this task?")) {
+                try {
+                  await deleteTask(task.task_id).unwrap();
+                  toast.success("Task deleted successfully");
+                } catch (err) {
+                  toast.error("Failed to delete task");
+                }
+              }
+            }}
           >
             <Trash2 className="w-4 h-4 mr-2" />
             Delete

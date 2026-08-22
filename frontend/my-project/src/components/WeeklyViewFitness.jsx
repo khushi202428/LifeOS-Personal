@@ -35,12 +35,21 @@ export function WeeklyViewFitness() {
   const navigate = useNavigate();
   const { user } = useSelector((s) => s.auth);
 
-  const { data: routine, isLoading } = useGetWeeklyFitnessRoutineQuery(
-    user?.user_id,
+  const { data: routine, isLoading, isError } = useGetWeeklyFitnessRoutineQuery(
+    undefined,
+    { skip: !user, refetchOnMountOrArgChange: true },
   );
 
-  if (isLoading || !routine) {
-    return <div className="text-white p-6">Loading week view…</div>;
+  if (!user) {
+    return <FitnessStatus message="Please sign in to view your workout." />;
+  }
+
+  if (isLoading) {
+    return <FitnessStatus message="Loading your weekly workout plan…" />;
+  }
+
+  if (isError || !routine) {
+    return <FitnessStatus message="No weekly workout plan is available yet." />;
   }
 
   const plan = routine.plan_snapshot;
@@ -153,6 +162,17 @@ function Info({ label, value }) {
     <div className="bg-white/10 backdrop-blur rounded-xl p-4 border border-white/20">
       <p className="text-xs text-white/60">{label}</p>
       <p className="text-sm font-semibold text-white capitalize">{value}</p>
+    </div>
+  );
+}
+
+function FitnessStatus({ message }) {
+  return (
+    <div className="min-h-[calc(100vh-96px)] bg-slate-950 px-6 flex items-center justify-center text-white">
+      <div className="max-w-md rounded-2xl border border-white/20 bg-white/10 p-6 text-center shadow-xl">
+        <Dumbbell className="mx-auto mb-3 h-9 w-9 text-orange-400" />
+        <p>{message}</p>
+      </div>
     </div>
   );
 }
