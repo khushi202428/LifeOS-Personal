@@ -1,4 +1,4 @@
-working on to get -
+Working on to get -
 1) AI agent reads your tasks, goals, deadlines.
 2) Creates a dynamic routine using: priorities,time availability,previous behaviour patterns.
 3) The system stores daily logs and shift tasks according to that ur efficiency…. It includes
