@@ -69,9 +69,6 @@ frontend Ui for planner chatbot
 <img width="1365" height="925" alt="output_2" src="https://github.com/user-attachments/assets/7738e17e-7572-40a3-90e0-e94d222b21a9" />
 ![1000029113](https://github.com/user-attachments/assets/d9db93b8-89bf-456e-aff3-1cf9a8a61f56)
 Updated graph after fitness tab functionality added
-
-
-
 <img width="1783" height="1234" alt="output_4" src="https://github.com/user-attachments/assets/a22f93f6-bf60-4bae-9d16-c3f7974a760d" />
 Updated Langgraph 
 
